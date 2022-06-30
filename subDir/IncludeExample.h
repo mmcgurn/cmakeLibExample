@@ -6,7 +6,7 @@
 namespace MathFunctions {
     void IncludeExample();
 
-    void IncludeExampleCheck(){
+    inline void IncludeExampleCheck(){
         std::cout <<"IncludeExampleCheck" << std::endl;
         int blue;
     }
