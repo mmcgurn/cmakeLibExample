@@ -5,6 +5,12 @@
 
 namespace MathFunctions {
     void IncludeExample();
+
+    void IncludeExampleCheck(){
+        std::cout <<"IncludeExampleCheck" << std::endl;
+        int blue;
+    }
+
 }
 
 #endif //MATHFUNCTIONS_INCLUDEEXAMPLE_H
