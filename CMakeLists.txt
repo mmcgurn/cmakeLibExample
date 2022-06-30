@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.22)
 project(MathFunctions)
 
 # make cache variables for install destinations
@@ -9,7 +9,16 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # create library
-add_library(MathFunctions STATIC MathFunctions.cxx)
+add_library(MathFunctions STATIC)
+add_subdirectory(subDir)
+
+target_sources(MathFunctions
+        PRIVATE
+          MathFunctions.cxx
+        PUBLIC
+          MathFunctions.h
+        )
+
 
 # add include directories
 target_include_directories(MathFunctions
@@ -27,8 +36,9 @@ install(TARGETS MathFunctions
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# install header file
+# install header file(s)
 install(FILES MathFunctions.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/subDir DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 
 # generate and install export file
 install(EXPORT MathFunctionsTargets
@@ -76,3 +86,15 @@ export(EXPORT MathFunctionsTargets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/MathFunctionsTargets.cmake"
        NAMESPACE MathFunctions::
 )
+
+# march over each target property
+get_target_property(InterfaceListOrg MathFunctions INTERFACE_SOURCES)
+foreach(interfaceOrg ${InterfaceListOrg})
+    # Replace this hard code value with relative values
+    file(RELATIVE_PATH relativeHeaderPath ${PROJECT_SOURCE_DIR} ${interfaceOrg})
+    # add the lists back
+    list(APPEND InterfaceListNew "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${relativeHeaderPath}>")
+    list(APPEND InterfaceListNew "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${relativeHeaderPath}>")
+endforeach()
+set_property(TARGET MathFunctions PROPERTY INTERFACE_SOURCES ${InterfaceListNew})
+
